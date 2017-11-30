@@ -1,18 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.oldmen.imagegallery.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primaryColor"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-</android.support.constraint.ConstraintLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btn_back_press_toolbar_main"
+                android:layout_width="40dp"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/description_btn_back_arrow"
+                android:paddingStart="@dimen/btn_margin_medium"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_back_press_arrow"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/toolbar_title_main"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="@dimen/text_margin_medium"
+                android:layout_marginStart="@dimen/text_margin_medium"
+                android:ellipsize="end"
+                android:fontFamily="cursive"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:text="@string/toolbar_title"
+                android:textColor="@color/primaryTextColor"
+                android:textSize="@dimen/text_size_huge" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical">
+
+                <android.support.v7.widget.SearchView
+                    android:id="@+id/toolbar_search_main"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:foregroundGravity="center_vertical"
+                    android:theme="@style/SearchViewStyle"
+                    app:queryHint="Search" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+    <FrameLayout
+        android:id="@+id/fragment_container_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

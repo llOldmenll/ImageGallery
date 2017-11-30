@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="group_view_padding_min">8dp</dimen>
+    <dimen name="group_view_padding_medium">16dp</dimen>
+    <dimen name="group_view_padding_large">24dp</dimen>
+    <dimen name="group_view_margin_min">8dp</dimen>
+    <dimen name="group_view_margin_medium">16dp</dimen>
+
+    <dimen name="btn_width">24dp</dimen>
+    <dimen name="btn_height">24dp</dimen>
+
+    <dimen name="btn_margin_min">8dp</dimen>
+    <dimen name="btn_margin_small">12dp</dimen>
+    <dimen name="btn_margin_medium">16dp</dimen>
+    <dimen name="btn_margin_large">24dp</dimen>
+    <dimen name="btn_margin_large_plus">26dp</dimen>
+    <dimen name="btn_margin_huge">32dp</dimen>
+    <dimen name="btn_margin_huge_plus">38dp</dimen>
+
+
+    <dimen name="text_size_tiny">10sp</dimen>
+    <dimen name="text_size_small">12sp</dimen>
+    <dimen name="text_size_medium">14sp</dimen>
+    <dimen name="text_size_big">16sp</dimen>
+    <dimen name="text_size_large">18sp</dimen>
+    <dimen name="text_size_huge">24sp</dimen>
+
+    <dimen name="text_margin_micro">4dp</dimen>
+    <dimen name="text_margin_min">8dp</dimen>
+    <dimen name="text_margin_medium">16dp</dimen>
+    <dimen name="text_margin_large">24dp</dimen>
+    <dimen name="text_margin_huge">32dp</dimen>
+    <dimen name="text_padding_min">8dp</dimen>
+    <dimen name="text_padding_medium">16dp</dimen>
+    <dimen name="text_padding_big">24dp</dimen>
+    <dimen name="text_padding_large">32dp</dimen>
+    <dimen name="text_padding_huge">48dp</dimen>
+
+</resources>
