@@ -70,29 +70,30 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.FolderHold
 
         private void bindView(String title, ArrayList<ImageModel> imgData) {
             int dataSize = imgData.size();
-            mTitle.setText(title);
-            mCount.setText(String.valueOf(imgData.size()));
-            initImgByGlide(imgData.get(dataSize - 1).getPath(), mImgFront);
+            if (dataSize > 0) {
+                mTitle.setText(title);
+                mCount.setText(String.valueOf(imgData.size()));
+                initImgByGlide(imgData.get(dataSize - 1).getPath(), mImgFront);
 
-            if (imgData.size() > 2) {
-                initImgByGlide(imgData.get(dataSize - 2).getPath(), mImgBackLeft);
-                initImgByGlide(imgData.get(dataSize - 3).getPath(), mImgBackRight);
-            } else if (imgData.size() > 1) {
-                initImgByGlide(imgData.get(dataSize - 2).getPath(), mImgBackLeft);
-                GlideApp.with(mContext).clear(mImgBackRight);
-            } else {
-                GlideApp.with(mContext).clear(mImgBackLeft);
-                GlideApp.with(mContext).clear(mImgBackRight);
+                if (imgData.size() > 2) {
+                    initImgByGlide(imgData.get(dataSize - 2).getPath(), mImgBackLeft);
+                    initImgByGlide(imgData.get(dataSize - 3).getPath(), mImgBackRight);
+                } else if (imgData.size() > 1) {
+                    initImgByGlide(imgData.get(dataSize - 2).getPath(), mImgBackLeft);
+                    GlideApp.with(mContext).clear(mImgBackRight);
+                } else {
+                    GlideApp.with(mContext).clear(mImgBackLeft);
+                    GlideApp.with(mContext).clear(mImgBackRight);
+                }
+                Log.i(TAG, "mImgFront: " + imgData.get(imgData.size() - 1).getPath());
             }
-            Log.i(TAG, "mImgFront: " + imgData.get(imgData.size() - 1).getPath());
         }
 
         private void initImgByGlide(String path, ImageView imgView) {
             GlideApp.with(mContext)
                     .load("file://" + path)
-                    .override(150)
+                    .override(96)
                     .centerCrop()
-                    .placeholder(mContext.getResources().getDrawable(R.drawable.default_img_background))
                     .into(imgView);
         }
     }
