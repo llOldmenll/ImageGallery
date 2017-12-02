@@ -24,7 +24,7 @@ import java.util.HashMap;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FolderClickListener {
 
     @BindView(R.id.btn_back_press_toolbar_main)
     ImageButton mBtnBackPress;
@@ -83,6 +83,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onFolderClicked(int position) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container_main,
+                        GridFragment.newInstance(mImageData.get(mFolderTitle.get(position))))
+                .addToBackStack("Grid Fragment")
+                .commit();
+    }
+
     private class ImagesDataThread extends Thread {
         @Override
         public void run() {
@@ -98,11 +107,18 @@ public class MainActivity extends AppCompatActivity {
                     MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
                     MediaStore.Images.Media.DATE_TAKEN};
 
-            Cursor cur = managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    projection, null, null, null);
+            loadFromStorage(managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    projection, null, null, null));
 
-            Log.i("ListingImages", " query count=" + cur.getCount());
+//            loadFromStorage(managedQuery(MediaStore.Images.Media.INTERNAL_CONTENT_URI,
+//                    projection, null, null, null));
 
+            Log.i("ListingImages", "getImagesData: mFolderTitle length" + mFolderTitle.size());
+            Log.i("ListingImages", "getImagesData: mImageData length" + mImageData.size());
+            handler.sendEmptyMessage(Constants.IMAGES_DATA_THREAD);
+        }
+
+        private void loadFromStorage(Cursor cur){
             if (cur.moveToFirst()) {
                 String title;
                 String imgUri;
@@ -129,10 +145,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 } while (cur.moveToNext());
             }
-
-            Log.i("ListingImages", "getImagesData: mFolderTitle length" + mFolderTitle.size());
-            Log.i("ListingImages", "getImagesData: mImageData length" + mImageData.size());
-            handler.sendEmptyMessage(Constants.IMAGES_DATA_THREAD);
         }
     }
 }

@@ -1,10 +1,13 @@
 package com.oldmen.imagegallery;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by MVP on 01.12.2017.
  */
 
-public class ImageModel {
+public class ImageModel implements Parcelable {
 
     private String path;
     private String title;
@@ -15,6 +18,24 @@ public class ImageModel {
         this.title = title;
         this.date = date;
     }
+
+    protected ImageModel(Parcel in) {
+        path = in.readString();
+        title = in.readString();
+        date = in.readString();
+    }
+
+    public static final Creator<ImageModel> CREATOR = new Creator<ImageModel>() {
+        @Override
+        public ImageModel createFromParcel(Parcel in) {
+            return new ImageModel(in);
+        }
+
+        @Override
+        public ImageModel[] newArray(int size) {
+            return new ImageModel[size];
+        }
+    };
 
     public String getPath() {
         return path;
@@ -38,5 +59,17 @@ public class ImageModel {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(path);
+        parcel.writeString(title);
+        parcel.writeString(date);
     }
 }

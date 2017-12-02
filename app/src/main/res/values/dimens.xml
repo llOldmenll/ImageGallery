@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <dimen name="group_view_padding_micro">2dp</dimen>
     <dimen name="group_view_padding_min">8dp</dimen>
     <dimen name="group_view_padding_medium">16dp</dimen>
     <dimen name="group_view_padding_large">24dp</dimen>

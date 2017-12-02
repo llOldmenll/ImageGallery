@@ -26,11 +26,13 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.FolderHold
     private Context mContext;
     private ArrayList<String> mFolderTitles;
     private HashMap<String, ArrayList<ImageModel>> mImageData;
+    private FolderClickListener mListener;
 
     public FolderAdapter(Context mContext, ArrayList<String> mFolderTitles, HashMap<String, ArrayList<ImageModel>> mImageData) {
         this.mContext = mContext;
         this.mFolderTitles = mFolderTitles;
         this.mImageData = mImageData;
+        if (mContext instanceof FolderClickListener) mListener = (FolderClickListener) mContext;
     }
 
     @Override
@@ -43,6 +45,7 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.FolderHold
     @Override
     public void onBindViewHolder(FolderHolder holder, int position) {
         holder.bindView(mFolderTitles.get(position), mImageData.get(mFolderTitles.get(position)));
+        holder.itemView.setOnClickListener(view -> mListener.onFolderClicked(position));
     }
 
     @Override
@@ -93,7 +96,6 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.FolderHold
             GlideApp.with(mContext)
                     .load("file://" + path)
                     .override(96)
-                    .centerCrop()
                     .into(imgView);
         }
     }
