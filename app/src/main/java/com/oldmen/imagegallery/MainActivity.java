@@ -158,7 +158,8 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
                     MediaStore.Images.Media.DISPLAY_NAME,
                     MediaStore.Images.Media._ID,
                     MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
-                    MediaStore.Images.Media.DATE_TAKEN};
+                    MediaStore.Images.Media.DATE_TAKEN,
+                    MediaStore.Images.Media.SIZE};
 
             loadFromStorage(managedQuery(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                     projection, null, null, null));
@@ -177,22 +178,24 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
                 String imgUri;
                 String bucket;
                 String date;
+                String size;
 
                 do {
                     bucket = cur.getString(cur.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME));
                     date = cur.getString(cur.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN));
                     imgUri = cur.getString(cur.getColumnIndex(MediaStore.MediaColumns.DATA));
                     title = cur.getString(cur.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
-                    mImageData.get(getString(R.string.all_title)).add(new ImageModel(imgUri, title, date));
+                    size = cur.getString(cur.getColumnIndex(MediaStore.Images.Media.SIZE));
+                    mImageData.get(getString(R.string.all_title)).add(new ImageModel(imgUri, title, date, size));
 
                     Log.i("ListingImages", " bucket=" + bucket
                             + "\ndate_taken=" + date + "\nDATA=" + imgUri + "\nImage title=" + title);
 
                     if (mFolderTitle.contains(bucket)) {
-                        mImageData.get(bucket).add(new ImageModel(imgUri, title, date));
+                        mImageData.get(bucket).add(new ImageModel(imgUri, title, date, size));
                     } else {
                         ArrayList<ImageModel> imgList = new ArrayList<>();
-                        imgList.add(new ImageModel(imgUri, title, date));
+                        imgList.add(new ImageModel(imgUri, title, date, size));
                         mFolderTitle.add(bucket);
                         mImageData.put(bucket, imgList);
                     }

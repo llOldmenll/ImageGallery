@@ -12,17 +12,21 @@ public class ImageModel implements Parcelable {
     private String path;
     private String title;
     private String date;
+    private String size;
 
-    public ImageModel(String path, String title, String date) {
+    public ImageModel(String path, String title, String date, String size) {
         this.path = path;
         this.title = title;
         this.date = date;
+        this.size = size;
     }
+
 
     protected ImageModel(Parcel in) {
         path = in.readString();
         title = in.readString();
         date = in.readString();
+        size = in.readString();
     }
 
     public static final Creator<ImageModel> CREATOR = new Creator<ImageModel>() {
@@ -61,6 +65,14 @@ public class ImageModel implements Parcelable {
         this.date = date;
     }
 
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -71,5 +83,6 @@ public class ImageModel implements Parcelable {
         parcel.writeString(path);
         parcel.writeString(title);
         parcel.writeString(date);
+        parcel.writeString(size);
     }
 }

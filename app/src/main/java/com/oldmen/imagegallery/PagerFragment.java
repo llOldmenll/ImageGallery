@@ -1,5 +1,6 @@
 package com.oldmen.imagegallery;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -7,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +16,9 @@ import android.widget.LinearLayout;
 
 import com.github.chrisbanes.photoview.PhotoView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,6 +30,12 @@ public class PagerFragment extends Fragment {
     ViewPager mViewPager;
     @BindView(R.id.footer_pager_fragment)
     LinearLayout mFooter;
+    @BindView(R.id.btn_rename_footer)
+    LinearLayout mBtnRenameFooter;
+    @BindView(R.id.btn_delete_footer)
+    LinearLayout mBtnDeleteFooter;
+    @BindView(R.id.btn_info_footer)
+    LinearLayout mBtnInfoFooter;
 
     private int mCurrentPosition;
     private boolean mIsFooterHidden;
@@ -71,6 +79,7 @@ public class PagerFragment extends Fragment {
         mViewPager.setOffscreenPageLimit(4);
         mViewPager.setAdapter(new PagerFragmentAdapter());
         mViewPager.setCurrentItem(mCurrentPosition);
+        initFooter(mImgModel.get(mViewPager.getCurrentItem()));
     }
 
     @Override
@@ -94,10 +103,21 @@ public class PagerFragment extends Fragment {
         unbinder.unbind();
     }
 
+    private void initFooter(ImageModel imgModel) {
+        mBtnInfoFooter.setOnClickListener(view -> {
+            SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORM_FACTOR, Locale.getDefault());
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
+            dialogBuilder.setMessage(String.format(mContext.getString(R.string.image_dialog_info),
+                    imgModel.getTitle(),
+                    dateFormat.format(Long.valueOf(imgModel.getDate())),
+                    Float.valueOf(imgModel.getSize()) / 1048576))
+                    .create().show();
+        });
+    }
+
     public interface PagerFragmentListener {
         void onImageClicked(boolean mIsFooterHidden);
     }
-
 
     class PagerFragmentAdapter extends PagerAdapter {
 
@@ -131,7 +151,6 @@ public class PagerFragment extends Fragment {
                     mIsFooterHidden = true;
                     mListener.onImageClicked(mIsFooterHidden);
                 }
-                Log.i("Footer", "onViewCreated: " + mFooter.getY());
             });
             container.addView(view);
             return view;

@@ -13,4 +13,5 @@ public class Constants {
     public static final String FRAGMENT_GRID_TAG = "FRAGMENT_GRID_TAG";
     public static final String FRAGMENT_PAGER_TAG = "FRAGMENT_PAGER_TAG";
     public static final int CAMERA_REQUEST_CODE = 200;
+    public static final String DATE_FORM_FACTOR = "yyyy-mm-dd HH:mm";
 }
