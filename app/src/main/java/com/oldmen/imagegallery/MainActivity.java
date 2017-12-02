@@ -1,6 +1,7 @@
 package com.oldmen.imagegallery;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -12,7 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -26,24 +27,33 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements ItemClickListener,
-        FragmentManager.OnBackStackChangedListener {
+        FragmentManager.OnBackStackChangedListener, PagerFragment.PagerFragmentListener {
 
     @BindView(R.id.btn_back_press_toolbar_main)
     ImageButton mBtnBackPress;
     @BindView(R.id.toolbar_title_main)
     TextView mToolbarTitle;
-    @BindView(R.id.toolbar_search_main)
-    SearchView mToolbarSearch;
     @BindView(R.id.folder_recycler_main)
     RecyclerView mFolderRecycler;
     @BindView(R.id.progressbar_main)
     ProgressBar mProgressbar;
+    @BindView(R.id.toolbar_main)
+    Toolbar mToolbar;
+    @BindView(R.id.btn_camera_toolbar_main)
+    ImageButton mBtnCamera;
 
     private Handler handler;
     private ArrayList<String> mFolderTitle = new ArrayList<>();
     private HashMap<String, ArrayList<ImageModel>> mImageData = new HashMap<>();
     private FolderAdapter mFolderAdapter;
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == Constants.CAMERA_REQUEST_CODE) {
+            mFolderRecycler.setVisibility(View.INVISIBLE);
+            getImageData();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +66,12 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         mFolderRecycler.setVisibility(View.INVISIBLE);
         initToolbar();
         initHandler();
-        checkPermission();
+        getImageData();
     }
 
-    private void initToolbar(){
+    private void initToolbar() {
         mBtnBackPress.setOnClickListener(view -> onBackPressed());
+        mBtnCamera.setOnClickListener(view -> openCamera());
     }
 
     private void initHandler() {
@@ -79,16 +90,24 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         });
     }
 
-    private void checkPermission() {
+    private void getImageData() {
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
 
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(
                     this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-            checkPermission();
+            getImageData();
         } else {
             new ImagesDataThread().start();
         }
+    }
+
+    private void openCamera() {
+        for (int i = 0; i < getSupportFragmentManager().getBackStackEntryCount(); i++)
+            getSupportFragmentManager().popBackStack();
+
+        startActivityForResult(new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA),
+                Constants.CAMERA_REQUEST_CODE);
     }
 
     @Override
@@ -96,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container_main,
                         GridFragment.newInstance(mImageData.get(mFolderTitle.get(position))))
-                .addToBackStack("Grid Fragment")
+                .addToBackStack(Constants.FRAGMENT_GRID_TAG)
                 .commit();
     }
 
@@ -105,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container_main,
                         PagerFragment.newInstance(position, mImgModel))
-                .addToBackStack("Pager Fragment")
+                .addToBackStack(Constants.FRAGMENT_PAGER_TAG)
                 .commit();
     }
 
@@ -116,6 +135,14 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
         } else {
             mBtnBackPress.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void onImageClicked(boolean mIsFooterHidden) {
+        if (mIsFooterHidden)
+            mToolbar.animate().translationY(-mToolbar.getHeight()).setDuration(200);
+        else
+            mToolbar.animate().translationY(0).setDuration(200);
     }
 
     private class ImagesDataThread extends Thread {

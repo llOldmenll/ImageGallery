@@ -6,6 +6,7 @@
     tools:context="com.oldmen.imagegallery.GridFragment">
 
     <android.support.v7.widget.RecyclerView
+        android:layout_marginTop="@dimen/toolbar_height"
         android:id="@+id/recycler_grid_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

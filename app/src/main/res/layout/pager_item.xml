@@ -5,7 +5,6 @@
     android:orientation="vertical">
 
     <com.github.chrisbanes.photoview.PhotoView
-        android:background="@color/primaryTextColor"
         android:id="@+id/img_pager_item"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

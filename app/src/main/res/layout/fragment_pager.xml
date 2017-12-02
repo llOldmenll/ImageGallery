@@ -2,7 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.oldmen.imagegallery.PagerFragment">
+    tools:context="com.oldmen.imagegallery.PagerFragment"
+    android:background="@color/primaryTextColor">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/view_pager_fragment"
@@ -13,7 +14,7 @@
     <LinearLayout
         android:id="@+id/footer_pager_fragment"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="@dimen/toolbar_height"
         android:layout_gravity="bottom"
         android:background="@color/primaryColor"
         android:elevation="1dp"

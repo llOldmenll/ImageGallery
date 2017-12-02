@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,10 +29,13 @@ public class PagerFragment extends Fragment {
     @BindView(R.id.footer_pager_fragment)
     LinearLayout mFooter;
 
+    private int mCurrentPosition;
+    private boolean mIsFooterHidden;
+
     private Unbinder unbinder;
     private Context mContext;
-    private int mCurrentPosition;
     private ArrayList<ImageModel> mImgModel;
+    private PagerFragmentListener mListener;
 
     public PagerFragment() {
     }
@@ -64,13 +68,6 @@ public class PagerFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-//        mViewPager.setOnClickListener(view1 -> {
-//            mFooter.animate()
-//                    .translationY(0)
-//                    .setDuration(200);
-//            Log.i(TAG, "onViewCreated: " + mFooter.getY());
-//        });
         mViewPager.setOffscreenPageLimit(4);
         mViewPager.setAdapter(new PagerFragmentAdapter());
         mViewPager.setCurrentItem(mCurrentPosition);
@@ -80,18 +77,15 @@ public class PagerFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         mContext = context;
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
+        if (context instanceof PagerFragmentListener)
+            mListener = (PagerFragmentListener) context;
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-//        mListener = null;
+        mListener.onImageClicked(false);
+        mListener = null;
     }
 
     @Override
@@ -100,10 +94,10 @@ public class PagerFragment extends Fragment {
         unbinder.unbind();
     }
 
-//    public interface OnFragmentInteractionListener {
-//        // TODO: Update argument type and name
-//        void onFragmentInteraction(Uri uri);
-//    }
+    public interface PagerFragmentListener {
+        void onImageClicked(boolean mIsFooterHidden);
+    }
+
 
     class PagerFragmentAdapter extends PagerAdapter {
 
@@ -124,6 +118,21 @@ public class PagerFragment extends Fragment {
             View view = layoutInflater.inflate(R.layout.pager_item, container, false);
             PhotoView imgView = view.findViewById(R.id.img_pager_item);
             initImgByGlide(mImgModel.get(position).getPath(), imgView);
+
+            imgView.setOnClickListener(view1 -> {
+                if (mIsFooterHidden) {
+                    mFooter.animate().translationY(0).setDuration(200);
+                    mViewPager.setBackgroundColor(mContext.getResources().getColor(R.color.primaryTextColor));
+                    mIsFooterHidden = false;
+                    mListener.onImageClicked(mIsFooterHidden);
+                } else {
+                    mFooter.animate().translationY(mFooter.getHeight()).setDuration(200);
+                    mViewPager.setBackgroundColor(mContext.getResources().getColor(R.color.color_black));
+                    mIsFooterHidden = true;
+                    mListener.onImageClicked(mIsFooterHidden);
+                }
+                Log.i("Footer", "onViewCreated: " + mFooter.getY());
+            });
             container.addView(view);
             return view;
         }
