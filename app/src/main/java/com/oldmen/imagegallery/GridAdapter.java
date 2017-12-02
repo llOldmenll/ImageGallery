@@ -20,10 +20,12 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridHolder> {
 
     private Context mContext;
     private ArrayList<ImageModel> mImgModel;
+    private ItemClickListener mListener;
 
     public GridAdapter(Context mContext, ArrayList<ImageModel> mImgModel) {
         this.mContext = mContext;
         this.mImgModel = mImgModel;
+        if(mContext instanceof ItemClickListener) mListener = (ItemClickListener) mContext;
     }
 
     @Override
@@ -36,6 +38,7 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridHolder> {
     @Override
     public void onBindViewHolder(GridHolder holder, int position) {
         holder.bindView(mImgModel.get(position).getPath());
+        holder.itemView.setOnClickListener(view -> mListener.onGridItemClicked(position, mImgModel));
     }
 
     @Override

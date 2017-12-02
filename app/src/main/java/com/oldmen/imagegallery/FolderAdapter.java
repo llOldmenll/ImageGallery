@@ -26,13 +26,13 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.FolderHold
     private Context mContext;
     private ArrayList<String> mFolderTitles;
     private HashMap<String, ArrayList<ImageModel>> mImageData;
-    private FolderClickListener mListener;
+    private ItemClickListener mListener;
 
     public FolderAdapter(Context mContext, ArrayList<String> mFolderTitles, HashMap<String, ArrayList<ImageModel>> mImageData) {
         this.mContext = mContext;
         this.mFolderTitles = mFolderTitles;
         this.mImageData = mImageData;
-        if (mContext instanceof FolderClickListener) mListener = (FolderClickListener) mContext;
+        if (mContext instanceof ItemClickListener) mListener = (ItemClickListener) mContext;
     }
 
     @Override

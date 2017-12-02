@@ -4,10 +4,21 @@
     android:layout_height="match_parent"
     tools:context="com.oldmen.imagegallery.PagerFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <android.support.v4.view.ViewPager
+        android:id="@+id/view_pager_fragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="match_parent" />
+
+
+    <LinearLayout
+        android:id="@+id/footer_pager_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_gravity="bottom"
+        android:background="@color/primaryColor"
+        android:elevation="1dp"
+        android:orientation="horizontal">
+
+    </LinearLayout>
 
 </FrameLayout>

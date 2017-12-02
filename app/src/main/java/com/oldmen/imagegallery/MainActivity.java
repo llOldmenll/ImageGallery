@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,7 +25,8 @@ import java.util.HashMap;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements FolderClickListener {
+public class MainActivity extends AppCompatActivity implements ItemClickListener,
+        FragmentManager.OnBackStackChangedListener {
 
     @BindView(R.id.btn_back_press_toolbar_main)
     ImageButton mBtnBackPress;
@@ -48,11 +50,17 @@ public class MainActivity extends AppCompatActivity implements FolderClickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
 
         mProgressbar.setVisibility(View.VISIBLE);
         mFolderRecycler.setVisibility(View.INVISIBLE);
+        initToolbar();
         initHandler();
         checkPermission();
+    }
+
+    private void initToolbar(){
+        mBtnBackPress.setOnClickListener(view -> onBackPressed());
     }
 
     private void initHandler() {
@@ -92,6 +100,24 @@ public class MainActivity extends AppCompatActivity implements FolderClickListen
                 .commit();
     }
 
+    @Override
+    public void onGridItemClicked(int position, ArrayList<ImageModel> mImgModel) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container_main,
+                        PagerFragment.newInstance(position, mImgModel))
+                .addToBackStack("Pager Fragment")
+                .commit();
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+            mBtnBackPress.setVisibility(View.GONE);
+        } else {
+            mBtnBackPress.setVisibility(View.VISIBLE);
+        }
+    }
+
     private class ImagesDataThread extends Thread {
         @Override
         public void run() {
@@ -118,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements FolderClickListen
             handler.sendEmptyMessage(Constants.IMAGES_DATA_THREAD);
         }
 
-        private void loadFromStorage(Cursor cur){
+        private void loadFromStorage(Cursor cur) {
             if (cur.moveToFirst()) {
                 String title;
                 String imgUri;
