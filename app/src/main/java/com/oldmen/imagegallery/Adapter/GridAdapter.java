@@ -1,4 +1,4 @@
-package com.oldmen.imagegallery;
+package com.oldmen.imagegallery.Adapter;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -7,6 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
+import com.oldmen.imagegallery.GlideApp;
+import com.oldmen.imagegallery.Model.ImageModel;
+import com.oldmen.imagegallery.Interface.ItemClickListener;
+import com.oldmen.imagegallery.R;
 
 import java.util.ArrayList;
 

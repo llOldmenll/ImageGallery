@@ -1,6 +1,8 @@
-package com.oldmen.imagegallery;
+package com.oldmen.imagegallery.Interface;
 
 import android.widget.ImageView;
+
+import com.oldmen.imagegallery.Model.ImageModel;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package com.oldmen.imagegallery;
+package com.oldmen.imagegallery.Adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.oldmen.imagegallery.GlideApp;
+import com.oldmen.imagegallery.Model.ImageModel;
+import com.oldmen.imagegallery.Interface.ItemClickListener;
+import com.oldmen.imagegallery.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;

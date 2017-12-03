@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primaryTextColor"
-    tools:context="com.oldmen.imagegallery.PagerFragment">
+    tools:context="com.oldmen.imagegallery.Fragment.PagerFragment">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/view_pager_fragment"

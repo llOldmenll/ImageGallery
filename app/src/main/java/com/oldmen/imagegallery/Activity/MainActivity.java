@@ -1,4 +1,4 @@
-package com.oldmen.imagegallery;
+package com.oldmen.imagegallery.Activity;
 
 import android.Manifest;
 import android.content.Intent;
@@ -13,7 +13,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,6 +23,15 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.oldmen.imagegallery.Adapter.FolderAdapter;
+import com.oldmen.imagegallery.Fragment.GridFragment;
+import com.oldmen.imagegallery.Fragment.PagerFragment;
+import com.oldmen.imagegallery.Interface.FragmentChangeListener;
+import com.oldmen.imagegallery.Interface.ItemClickListener;
+import com.oldmen.imagegallery.Model.ImageModel;
+import com.oldmen.imagegallery.R;
+import com.oldmen.imagegallery.Utils.Constants;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -221,7 +229,6 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     public void onGridItemClicked(int position, String folderTitle, ArrayList<ImageModel> mImgModel, ImageView imgView) {
         mPagerFragment = PagerFragment.newInstance(position, folderTitle, mImgModel);
         getSupportFragmentManager().beginTransaction()
-                .addSharedElement(imgView, ViewCompat.getTransitionName(imgView))
                 .replace(R.id.fragment_container_main, mPagerFragment)
                 .addToBackStack(Constants.FRAGMENT_PAGER_TAG)
                 .commit();

@@ -1,4 +1,4 @@
-package com.oldmen.imagegallery;
+package com.oldmen.imagegallery.Fragment;
 
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -20,6 +20,12 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.github.chrisbanes.photoview.PhotoView;
+import com.oldmen.imagegallery.GlideApp;
+import com.oldmen.imagegallery.Model.ImageModel;
+import com.oldmen.imagegallery.Interface.FragmentChangeListener;
+import com.oldmen.imagegallery.R;
+import com.oldmen.imagegallery.Utils.Constants;
+import com.oldmen.imagegallery.Utils.ZoomOutPageTransformer;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

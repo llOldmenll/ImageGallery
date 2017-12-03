@@ -1,4 +1,4 @@
-package com.oldmen.imagegallery;
+package com.oldmen.imagegallery.Model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

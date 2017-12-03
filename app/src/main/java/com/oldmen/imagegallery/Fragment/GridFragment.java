@@ -1,4 +1,4 @@
-package com.oldmen.imagegallery;
+package com.oldmen.imagegallery.Fragment;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,6 +13,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.oldmen.imagegallery.Adapter.GridAdapter;
+import com.oldmen.imagegallery.Model.ImageModel;
+import com.oldmen.imagegallery.Interface.FragmentChangeListener;
+import com.oldmen.imagegallery.R;
+import com.oldmen.imagegallery.Utils.Constants;
 
 import java.util.ArrayList;
 

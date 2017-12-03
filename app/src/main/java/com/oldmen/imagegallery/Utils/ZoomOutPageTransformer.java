@@ -1,4 +1,4 @@
-package com.oldmen.imagegallery;
+package com.oldmen.imagegallery.Utils;
 
 import android.support.v4.view.ViewPager;
 import android.view.View;

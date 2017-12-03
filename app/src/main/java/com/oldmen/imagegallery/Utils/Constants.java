@@ -1,4 +1,4 @@
-package com.oldmen.imagegallery;
+package com.oldmen.imagegallery.Utils;
 
 /**
  * Created by MVP on 15.10.2017.
