@@ -1,5 +1,6 @@
 package com.oldmen.imagegallery;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,11 +22,13 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridHolder> {
     private Context mContext;
     private ArrayList<ImageModel> mImgModel;
     private ItemClickListener mListener;
+    private String mFolderTitle;
 
-    public GridAdapter(Context mContext, ArrayList<ImageModel> mImgModel) {
+    public GridAdapter(Context mContext, String mFolderTitle, ArrayList<ImageModel> mImgModel) {
         this.mContext = mContext;
         this.mImgModel = mImgModel;
-        if(mContext instanceof ItemClickListener) mListener = (ItemClickListener) mContext;
+        this.mFolderTitle = mFolderTitle;
+        if (mContext instanceof ItemClickListener) mListener = (ItemClickListener) mContext;
     }
 
     @Override
@@ -38,7 +41,21 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridHolder> {
     @Override
     public void onBindViewHolder(GridHolder holder, int position) {
         holder.bindView(mImgModel.get(position).getPath());
-        holder.itemView.setOnClickListener(view -> mListener.onGridItemClicked(position, mImgModel));
+        holder.itemView.setOnClickListener(view -> mListener.onGridItemClicked(position, mFolderTitle, mImgModel, holder.mImg));
+        holder.itemView.setOnLongClickListener(view -> {
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
+            dialogBuilder.setTitle(mContext.getString(R.string.delete))
+                    .setIcon(mContext.getDrawable(R.drawable.ic_action_delete))
+                    .setMessage(String.format(mContext.getString(R.string.delete_image_dialog),
+                            mImgModel.get(position).getTitle()))
+                    .setPositiveButton(mContext.getString(R.string.delete),
+                            (dialogInterface, i) -> {
+                                mListener.onDeleteImage(position, mFolderTitle);
+                                notifyDataSetChanged();})
+                    .setNegativeButton(mContext.getString(R.string.cancel), null)
+                    .create().show();
+            return false;
+        });
     }
 
     @Override
@@ -46,7 +63,8 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridHolder> {
         return mImgModel.size();
     }
 
-    class GridHolder extends RecyclerView.ViewHolder{
+
+    class GridHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.img_grid_item)
         ImageView mImg;
 
@@ -55,7 +73,7 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridHolder> {
             ButterKnife.bind(this, itemView);
         }
 
-        private void bindView(String path){
+        private void bindView(String path) {
             initImgByGlide(path);
         }
 

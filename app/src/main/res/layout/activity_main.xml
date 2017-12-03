@@ -1,93 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context="com.oldmen.imagegallery.MainActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:layout_alignParentTop="true"
-        android:id="@+id/toolbar_main"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_height"
-        android:background="@color/primaryColor"
-        android:elevation="4dp"
-        app:contentInsetLeft="0dp"
-        app:contentInsetStart="0dp"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-
-        <RelativeLayout
-            android:gravity="center_vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <ImageButton
-                android:layout_alignParentStart="true"
-                android:id="@+id/btn_back_press_toolbar_main"
-                android:layout_width="40dp"
-                android:layout_height="@dimen/toolbar_height"
-                android:background="@android:color/transparent"
-                android:contentDescription="@string/description_btn_back_arrow"
-                android:paddingStart="@dimen/view_margin_medium"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_back_press_arrow"
-                android:visibility="gone" />
-
-            <TextView
-                android:foregroundGravity="center_vertical"
-                android:layout_toEndOf="@id/btn_back_press_toolbar_main"
-                android:id="@+id/toolbar_title_main"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="@dimen/text_margin_medium"
-                android:layout_marginStart="@dimen/text_margin_medium"
-                android:ellipsize="end"
-                android:fontFamily="cursive"
-                android:gravity="center_vertical"
-                android:maxLines="1"
-                android:text="@string/toolbar_title"
-                android:textColor="@color/primaryTextColor"
-                android:textSize="@dimen/text_size_huge" />
-
-            <ImageButton
-                android:padding="@dimen/view_padding_medium"
-                android:foregroundGravity="center_vertical"
-                android:id="@+id/btn_camera_toolbar_main"
-                android:background="@android:color/transparent"
-                android:src="@drawable/ic_action_camera"
-
-                android:layout_alignParentEnd="true"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
-
-
-        </RelativeLayout>
-
-    </android.support.v7.widget.Toolbar>
-
-    <FrameLayout
-        android:layout_alignParentTop="true"
-        android:id="@+id/fragment_container_main"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ProgressBar
-            android:id="@+id/progressbar_main"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_main"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/toolbar_height"
+            android:layout_alignParentTop="true"
+            android:background="@color/primaryColor"
+            android:elevation="4dp"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-        <android.support.v7.widget.RecyclerView
-            android:layout_marginTop="@dimen/toolbar_height"
-            android:id="@+id/folder_recycler_main"
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/btn_back_press_toolbar_main"
+                    android:layout_width="40dp"
+                    android:layout_height="@dimen/toolbar_height"
+                    android:layout_alignParentStart="true"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/description_btn_back_arrow"
+                    android:paddingStart="@dimen/view_margin_medium"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_back_press_arrow"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/toolbar_title_main"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="@dimen/text_margin_medium"
+                    android:layout_marginStart="@dimen/text_margin_medium"
+                    android:layout_toEndOf="@id/btn_back_press_toolbar_main"
+                    android:ellipsize="end"
+                    android:fontFamily="cursive"
+                    android:foregroundGravity="center_vertical"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:text="@string/toolbar_title"
+                    android:textColor="@color/primaryTextColor"
+                    android:textSize="@dimen/text_size_huge" />
+
+                <ImageButton
+                    android:id="@+id/btn_camera_toolbar_main"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentEnd="true"
+                    android:background="@android:color/transparent"
+                    android:foregroundGravity="center_vertical"
+                    android:padding="@dimen/view_padding_medium"
+                    android:src="@drawable/ic_action_camera" />
+
+            </RelativeLayout>
+
+        </android.support.v7.widget.Toolbar>
+
+        <FrameLayout
+            android:id="@+id/fragment_container_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="invisible" />
+            android:layout_alignParentTop="true">
 
-    </FrameLayout>
+            <ProgressBar
+                android:id="@+id/progressbar_main"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
 
-</RelativeLayout>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/folder_recycler_main"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/toolbar_height"
+                android:visibility="invisible" />
+
+        </FrameLayout>
+
+    </RelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_download_main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="@dimen/view_margin_medium"
+        android:layout_marginEnd="@dimen/view_margin_medium"
+        app:backgroundTint="@color/primaryColor"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/ic_action_download" />
+
+</android.support.design.widget.CoordinatorLayout>

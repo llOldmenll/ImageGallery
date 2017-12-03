@@ -1,5 +1,7 @@
 package com.oldmen.imagegallery;
 
+import android.widget.ImageView;
+
 import java.util.ArrayList;
 
 /**
@@ -8,5 +10,6 @@ import java.util.ArrayList;
 
 public interface ItemClickListener {
     void onFolderClicked(int position);
-    void onGridItemClicked(int position, ArrayList<ImageModel> mImgModel);
+    void onGridItemClicked(int position, String folderTitle, ArrayList<ImageModel> mImgModel, ImageView imgView);
+    void onDeleteImage(int position, String folder);
 }

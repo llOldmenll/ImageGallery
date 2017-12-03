@@ -1,7 +1,9 @@
 package com.oldmen.imagegallery;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,14 +30,17 @@ public class GridFragment extends Fragment {
     private Unbinder unbinder;
     private ArrayList<ImageModel> mImgModel;
     private GridAdapter mGridAdapter;
+    private String mFolderTitle;
+    private FragmentChangeListener mFragmentListener;
 
     public GridFragment() {
     }
 
-    public static GridFragment newInstance(ArrayList<ImageModel> mImgModel) {
+    public static GridFragment newInstance(String folderTitle, ArrayList<ImageModel> mImgModel) {
         GridFragment fragment = new GridFragment();
         Bundle args = new Bundle();
         args.putParcelableArrayList(Constants.ARGUMENT_IMAGE_MODEL_GRID, mImgModel);
+        args.putString(Constants.ARGUMENT_CURRENT_FOLDER_TITLE, folderTitle);
         fragment.setArguments(args);
         return fragment;
     }
@@ -43,8 +48,10 @@ public class GridFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext.registerReceiver(new GridReceiver(), new IntentFilter(Constants.FILTER_GRID_RECEIVER));
         if (getArguments() != null) {
             mImgModel = getArguments().getParcelableArrayList(Constants.ARGUMENT_IMAGE_MODEL_GRID);
+            mFolderTitle = getArguments().getString(Constants.ARGUMENT_CURRENT_FOLDER_TITLE);
         }
     }
 
@@ -60,8 +67,8 @@ public class GridFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        if(mImgModel != null){
-            mGridAdapter = new GridAdapter(mContext, mImgModel);
+        if (mImgModel != null) {
+            mGridAdapter = new GridAdapter(mContext, mFolderTitle, mImgModel);
             mRecyclerGrid.setLayoutManager(new GridLayoutManager(mContext, 4));
             mRecyclerGrid.setAdapter(mGridAdapter);
         }
@@ -71,18 +78,13 @@ public class GridFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         mContext = context;
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
+        if(context instanceof FragmentChangeListener)
+            mFragmentListener = (FragmentChangeListener) context;
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-//        mListener = null;
     }
 
     @Override
@@ -91,9 +93,22 @@ public class GridFragment extends Fragment {
         unbinder.unbind();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mGridAdapter != null)
+            mGridAdapter.notifyDataSetChanged();
+        if(mFragmentListener != null)
+            mFragmentListener.onFragmentChanged(mFolderTitle);
+    }
 
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+    public class GridReceiver extends BroadcastReceiver{
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getExtras() != null) {
+                mImgModel.remove(intent.getIntExtra(Constants.EXTRAS_IMAGE_POSITION, 0));
+                mGridAdapter.notifyDataSetChanged();
+            }
+        }
     }
 }
