@@ -1,6 +1,7 @@
 package com.oldmen.imagegallery.Activity;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -32,6 +33,7 @@ import com.oldmen.imagegallery.Interface.ItemClickListener;
 import com.oldmen.imagegallery.Model.ImageModel;
 import com.oldmen.imagegallery.R;
 import com.oldmen.imagegallery.Utils.Constants;
+import com.oldmen.imagegallery.Utils.InternetConnectionCheck;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -108,6 +110,19 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
                 }
             }
         });
+
+        mFabDownload.setOnClickListener(view -> {
+            if (InternetConnectionCheck.checkConnection(getApplicationContext())) {
+                startActivity(new Intent(MainActivity.this, DownloadActivity.class));
+            } else {
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+                dialogBuilder.setTitle(getString(R.string.download_image))
+                        .setMessage(getString(R.string.internet_unavailable))
+                        .setPositiveButton(getString(R.string.ok), null)
+                        .create().show();
+            }
+        });
+
     }
 
     private void getImageData() {

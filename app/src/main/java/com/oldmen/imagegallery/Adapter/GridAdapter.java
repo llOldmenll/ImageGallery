@@ -68,7 +68,6 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridHolder> {
         return mImgModel.size();
     }
 
-
     class GridHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.img_grid_item)
         ImageView mImg;
