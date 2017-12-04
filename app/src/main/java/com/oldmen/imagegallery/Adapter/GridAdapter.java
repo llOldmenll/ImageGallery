@@ -9,8 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.oldmen.imagegallery.GlideApp;
+import com.oldmen.imagegallery.Interface.DownloadItemClickListener;
+import com.oldmen.imagegallery.Interface.MainItemClickListener;
+import com.oldmen.imagegallery.Model.Hit;
 import com.oldmen.imagegallery.Model.ImageModel;
-import com.oldmen.imagegallery.Interface.ItemClickListener;
 import com.oldmen.imagegallery.R;
 
 import java.util.ArrayList;
@@ -25,15 +27,27 @@ import butterknife.ButterKnife;
 public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridHolder> {
 
     private Context mContext;
+    private boolean isMainActivity;
     private ArrayList<ImageModel> mImgModel;
-    private ItemClickListener mListener;
+    private ArrayList<Hit> mHit;
+    private MainItemClickListener mMainListener;
+    private DownloadItemClickListener mDownloadListener;
     private String mFolderTitle;
 
     public GridAdapter(Context mContext, String mFolderTitle, ArrayList<ImageModel> mImgModel) {
+        isMainActivity = true;
         this.mContext = mContext;
         this.mImgModel = mImgModel;
         this.mFolderTitle = mFolderTitle;
-        if (mContext instanceof ItemClickListener) mListener = (ItemClickListener) mContext;
+        if (mContext instanceof MainItemClickListener) mMainListener = (MainItemClickListener) mContext;
+    }
+
+    public GridAdapter(Context mContext, ArrayList<Hit> mHit) {
+        isMainActivity = false;
+        this.mContext = mContext;
+        this.mHit = mHit;
+        if(mContext instanceof DownloadItemClickListener)
+        mDownloadListener = (DownloadItemClickListener) mContext;
     }
 
     @Override
@@ -45,27 +59,35 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridHolder> {
 
     @Override
     public void onBindViewHolder(GridHolder holder, int position) {
-        holder.bindView(mImgModel.get(position).getPath());
-        holder.itemView.setOnClickListener(view -> mListener.onGridItemClicked(position, mFolderTitle, mImgModel, holder.mImg));
-        holder.itemView.setOnLongClickListener(view -> {
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
-            dialogBuilder.setTitle(mContext.getString(R.string.delete))
-                    .setIcon(mContext.getDrawable(R.drawable.ic_action_delete))
-                    .setMessage(String.format(mContext.getString(R.string.delete_image_dialog),
-                            mImgModel.get(position).getTitle()))
-                    .setPositiveButton(mContext.getString(R.string.delete),
-                            (dialogInterface, i) -> {
-                                mListener.onDeleteImage(position, mFolderTitle);
-                                notifyDataSetChanged();})
-                    .setNegativeButton(mContext.getString(R.string.cancel), null)
-                    .create().show();
-            return false;
-        });
+
+        if (isMainActivity) {
+            holder.bindView(mImgModel.get(position).getPath());
+            holder.itemView.setOnClickListener(view -> mMainListener.onGridItemClicked(position, mFolderTitle, mImgModel));
+            holder.itemView.setOnLongClickListener(view -> {
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
+                dialogBuilder.setTitle(mContext.getString(R.string.delete))
+                        .setIcon(mContext.getDrawable(R.drawable.ic_action_delete))
+                        .setMessage(String.format(mContext.getString(R.string.delete_image_dialog),
+                                mImgModel.get(position).getTitle()))
+                        .setPositiveButton(mContext.getString(R.string.delete),
+                                (dialogInterface, i) -> {
+                                    mMainListener.onDeleteImage(position, mFolderTitle);
+                                    notifyDataSetChanged();
+                                })
+                        .setNegativeButton(mContext.getString(R.string.cancel), null)
+                        .create().show();
+                return false;
+            });
+        } else {
+            holder.bindView(mHit.get(position).getmPreviewURL());
+            holder.itemView.setOnClickListener(view -> mDownloadListener.onGridItemClicked(position, mHit));
+        }
     }
 
     @Override
     public int getItemCount() {
-        return mImgModel.size();
+        if (isMainActivity) return mImgModel.size();
+        else return mHit.size();
     }
 
     class GridHolder extends RecyclerView.ViewHolder {
@@ -78,12 +100,20 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.GridHolder> {
         }
 
         private void bindView(String path) {
-            initImgByGlide(path);
+            if (isMainActivity) loadLocalImgByGlide(path);
+            else loadWebImgByGlide(path);
         }
 
-        private void initImgByGlide(String path) {
+        private void loadLocalImgByGlide(String path) {
             GlideApp.with(mContext)
                     .load("file://" + path)
+                    .override(156)
+                    .into(mImg);
+        }
+
+        private void loadWebImgByGlide(String url) {
+            GlideApp.with(mContext)
+                    .load(url)
                     .override(156)
                     .into(mImg);
         }

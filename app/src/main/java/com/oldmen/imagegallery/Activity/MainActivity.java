@@ -20,8 +20,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -29,7 +30,7 @@ import com.oldmen.imagegallery.Adapter.FolderAdapter;
 import com.oldmen.imagegallery.Fragment.GridFragment;
 import com.oldmen.imagegallery.Fragment.PagerFragment;
 import com.oldmen.imagegallery.Interface.FragmentChangeListener;
-import com.oldmen.imagegallery.Interface.ItemClickListener;
+import com.oldmen.imagegallery.Interface.MainItemClickListener;
 import com.oldmen.imagegallery.Model.ImageModel;
 import com.oldmen.imagegallery.R;
 import com.oldmen.imagegallery.Utils.Constants;
@@ -42,7 +43,7 @@ import java.util.HashMap;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements ItemClickListener,
+public class MainActivity extends AppCompatActivity implements MainItemClickListener,
         FragmentManager.OnBackStackChangedListener, PagerFragment.PagerFragmentListener,
         FragmentChangeListener {
 
@@ -241,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
     }
 
     @Override
-    public void onGridItemClicked(int position, String folderTitle, ArrayList<ImageModel> mImgModel, ImageView imgView) {
+    public void onGridItemClicked(int position, String folderTitle, ArrayList<ImageModel> mImgModel) {
         mPagerFragment = PagerFragment.newInstance(position, folderTitle, mImgModel);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container_main, mPagerFragment)
@@ -268,10 +269,18 @@ public class MainActivity extends AppCompatActivity implements ItemClickListener
 
     @Override
     public void onImageClicked(boolean mIsFooterHidden) {
-        if (mIsFooterHidden)
-            mToolbar.animate().translationY(-mToolbar.getHeight()).setDuration(200);
-        else
+        Window window = getWindow();
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        if (mIsFooterHidden) {
+            mToolbar.animate()
+                    .translationY(-mToolbar.getHeight())
+                    .setDuration(200);
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.color_black));
+        } else {
             mToolbar.animate().translationY(0).setDuration(200);
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.primaryDarkColor));
+        }
     }
 
     @Override

@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.oldmen.imagegallery.GlideApp;
 import com.oldmen.imagegallery.Model.ImageModel;
-import com.oldmen.imagegallery.Interface.ItemClickListener;
+import com.oldmen.imagegallery.Interface.MainItemClickListener;
 import com.oldmen.imagegallery.R;
 
 import java.util.ArrayList;
@@ -31,13 +31,13 @@ public class FolderAdapter extends RecyclerView.Adapter<FolderAdapter.FolderHold
     private Context mContext;
     private ArrayList<String> mFolderTitles;
     private HashMap<String, ArrayList<ImageModel>> mImageData;
-    private ItemClickListener mListener;
+    private MainItemClickListener mListener;
 
     public FolderAdapter(Context mContext, ArrayList<String> mFolderTitles, HashMap<String, ArrayList<ImageModel>> mImageData) {
         this.mContext = mContext;
         this.mFolderTitles = mFolderTitles;
         this.mImageData = mImageData;
-        if (mContext instanceof ItemClickListener) mListener = (ItemClickListener) mContext;
+        if (mContext instanceof MainItemClickListener) mListener = (MainItemClickListener) mContext;
     }
 
     @Override

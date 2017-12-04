@@ -21,8 +21,9 @@ import android.widget.Toast;
 
 import com.github.chrisbanes.photoview.PhotoView;
 import com.oldmen.imagegallery.GlideApp;
-import com.oldmen.imagegallery.Model.ImageModel;
 import com.oldmen.imagegallery.Interface.FragmentChangeListener;
+import com.oldmen.imagegallery.Model.Hit;
+import com.oldmen.imagegallery.Model.ImageModel;
 import com.oldmen.imagegallery.R;
 import com.oldmen.imagegallery.Utils.Constants;
 import com.oldmen.imagegallery.Utils.ZoomOutPageTransformer;
@@ -48,10 +49,12 @@ public class PagerFragment extends Fragment {
 
     private int mCurrentPosition;
     private boolean mIsFooterHidden;
+    private boolean isMainActivity;
 
     private Unbinder unbinder;
     private Context mContext;
     private ArrayList<ImageModel> mImgModel;
+    private ArrayList<Hit> mHits;
     private PagerFragmentListener mPagerListener;
     private PagerFragmentAdapter mPagerAdapter;
     private String mFolderTitle;
@@ -70,15 +73,31 @@ public class PagerFragment extends Fragment {
         return fragment;
     }
 
+    public static PagerFragment newInstance(int mCurrentPosition, ArrayList<Hit> mImgModel) {
+        PagerFragment fragment = new PagerFragment();
+        Bundle args = new Bundle();
+        args.putInt(Constants.ARGUMENT_CURRENT_POSITION_PAGER, mCurrentPosition);
+        args.putParcelableArrayList(Constants.ARGUMENT_IMAGE_MODEL_PAGER, mImgModel);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mContext.registerReceiver(new PagerReceiver(), new IntentFilter(Constants.FILTER_PAGER_RECEIVER));
         if (getArguments() != null) {
-            mCurrentPosition = getArguments().getInt(Constants.ARGUMENT_CURRENT_POSITION_PAGER);
-            mImgModel = getArguments().getParcelableArrayList(Constants.ARGUMENT_IMAGE_MODEL_PAGER);
-            mFolderTitle = getArguments().getString(Constants.ARGUMENT_CURRENT_FOLDER_TITLE);
+            if (getArguments().containsKey(Constants.ARGUMENT_CURRENT_FOLDER_TITLE)) {
+                mContext.registerReceiver(new PagerReceiver(), new IntentFilter(Constants.FILTER_PAGER_RECEIVER));
+                mCurrentPosition = getArguments().getInt(Constants.ARGUMENT_CURRENT_POSITION_PAGER);
+                mImgModel = getArguments().getParcelableArrayList(Constants.ARGUMENT_IMAGE_MODEL_PAGER);
+                mFolderTitle = getArguments().getString(Constants.ARGUMENT_CURRENT_FOLDER_TITLE);
+                isMainActivity = true;
+            } else {
+                mCurrentPosition = getArguments().getInt(Constants.ARGUMENT_CURRENT_POSITION_PAGER);
+                mHits = getArguments().getParcelableArrayList(Constants.ARGUMENT_IMAGE_MODEL_PAGER);
+                isMainActivity = false;
+            }
         }
     }
 
@@ -92,8 +111,13 @@ public class PagerFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (mFragmentListener != null)
-            mFragmentListener.onFragmentChanged(mImgModel.get(mCurrentPosition).getTitle());
+
+        if (mFragmentListener != null) {
+            if (isMainActivity)
+                mFragmentListener.onFragmentChanged(mImgModel.get(mCurrentPosition).getTitle());
+            else
+                mFragmentListener.onFragmentChanged(mHits.get(mCurrentPosition).getmTags());
+        }
         mPagerAdapter = new PagerFragmentAdapter();
         mViewPager.setOffscreenPageLimit(6);
         mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
@@ -107,8 +131,12 @@ public class PagerFragment extends Fragment {
 
             @Override
             public void onPageSelected(int position) {
-                if (mFragmentListener != null)
-                    mFragmentListener.onFragmentChanged(mImgModel.get(position).getTitle());
+                if (mFragmentListener != null) {
+                    if (isMainActivity)
+                        mFragmentListener.onFragmentChanged(mImgModel.get(position).getTitle());
+                    else
+                        mFragmentListener.onFragmentChanged(mHits.get(position).getmTags());
+                }
             }
 
             @Override
@@ -148,34 +176,40 @@ public class PagerFragment extends Fragment {
     }
 
     private void initFooter() {
-        mBtnInfoFooter.setOnClickListener(view -> {
-            SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORM_FACTOR, Locale.getDefault());
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
-            dialogBuilder.setMessage(String.format(mContext.getString(R.string.image_dialog_info),
-                    mFolderTitle,
-                    mImgModel.get(mViewPager.getCurrentItem()).getTitle(),
-                    dateFormat.format(Long.valueOf(mImgModel.get(mViewPager.getCurrentItem()).getDate())),
-                    Float.valueOf(mImgModel.get(mViewPager.getCurrentItem()).getSize()) / 1048576))
-                    .create().show();
-        });
-        mBtnRenameFooter.setOnClickListener(view -> {
-            View editDialogView = LayoutInflater.from(mContext).inflate(R.layout.rename_image_dialog, null);
-            EditText editTxt = editDialogView.findViewById(R.id.edit_txt_rename_dialog);
-            editTxt.setHint(mImgModel.get(mViewPager.getCurrentItem()).getTitle());
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
-            dialogBuilder.setTitle(mContext.getString(R.string.rename))
-                    .setView(editDialogView)
-                    .setPositiveButton(mContext.getString(R.string.rename),
-                            (dialogInterface, i) -> {
-                                if (editTxt.getText().toString().trim().isEmpty())
-                                    Toast.makeText(mContext, "Please, type file name first!", Toast.LENGTH_SHORT).show();
-                                else
-                                    mPagerListener.onImageRename(mViewPager.getCurrentItem(),
-                                            mFolderTitle, editTxt.getText().toString());
-                            })
-                    .setNegativeButton(mContext.getString(R.string.cancel), null)
-                    .create().show();
-        });
+        if (isMainActivity) {
+            mBtnInfoFooter.setOnClickListener(view -> {
+                SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORM_FACTOR, Locale.getDefault());
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
+                dialogBuilder.setMessage(String.format(mContext.getString(R.string.image_dialog_info),
+                        mFolderTitle,
+                        mImgModel.get(mViewPager.getCurrentItem()).getTitle(),
+                        dateFormat.format(Long.valueOf(mImgModel.get(mViewPager.getCurrentItem()).getDate())),
+                        Float.valueOf(mImgModel.get(mViewPager.getCurrentItem()).getSize()) / 1048576))
+                        .create().show();
+            });
+            mBtnRenameFooter.setOnClickListener(view -> {
+                View editDialogView = LayoutInflater.from(mContext).inflate(R.layout.rename_image_dialog, null);
+                EditText editTxt = editDialogView.findViewById(R.id.edit_txt_rename_dialog);
+                editTxt.setHint(mImgModel.get(mViewPager.getCurrentItem()).getTitle());
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
+                dialogBuilder.setTitle(mContext.getString(R.string.rename))
+                        .setView(editDialogView)
+                        .setPositiveButton(mContext.getString(R.string.rename),
+                                (dialogInterface, i) -> {
+                                    if (editTxt.getText().toString().trim().isEmpty())
+                                        Toast.makeText(mContext, "Please, type file name first!", Toast.LENGTH_SHORT).show();
+                                    else
+                                        mPagerListener.onImageRename(mViewPager.getCurrentItem(),
+                                                mFolderTitle, editTxt.getText().toString());
+                                })
+                        .setNegativeButton(mContext.getString(R.string.cancel), null)
+                        .create().show();
+            });
+        } else {
+            mBtnInfoFooter.setVisibility(View.GONE);
+            mBtnRenameFooter.setVisibility(View.GONE);
+        }
+
     }
 
     public interface PagerFragmentListener {
@@ -187,7 +221,7 @@ public class PagerFragment extends Fragment {
     public class PagerReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getExtras() != null) {
+            if (intent.getExtras() != null && isMainActivity) {
                 mCurrentPosition = intent.getIntExtra(Constants.EXTRAS_IMAGE_POSITION, 0);
                 mImgModel.get(mCurrentPosition).setTitle(intent.getStringExtra(Constants.EXTRAS_NEW_IMAGE_NAME));
                 mPagerAdapter.notifyDataSetChanged();
@@ -201,7 +235,10 @@ public class PagerFragment extends Fragment {
 
         @Override
         public int getCount() {
-            return mImgModel.size();
+            if (isMainActivity)
+                return mImgModel.size();
+            else
+                return mHits.size();
         }
 
         @Override
@@ -216,7 +253,10 @@ public class PagerFragment extends Fragment {
             View view = layoutInflater.inflate(R.layout.pager_item, container, false);
 
             PhotoView imgView = view.findViewById(R.id.img_pager_item);
-            initImgByGlide(mImgModel.get(position).getPath(), imgView);
+            if (isMainActivity)
+                loadLocalImgByGlide(mImgModel.get(position).getPath(), imgView);
+            else
+                loadWebImgByGlide(mHits.get(position).getmWebformatURL(), imgView);
             imgView.setOnClickListener(view1 -> {
                 if (mIsFooterHidden) {
                     mFooter.animate().translationY(0).setDuration(200);
@@ -239,9 +279,16 @@ public class PagerFragment extends Fragment {
             container.removeView((LinearLayout) object);
         }
 
-        private void initImgByGlide(String path, ImageView view) {
+        private void loadLocalImgByGlide(String path, ImageView view) {
             GlideApp.with(mContext)
                     .load("file://" + path)
+                    .fitCenter()
+                    .into(view);
+        }
+
+        private void loadWebImgByGlide(String path, ImageView view) {
+            GlideApp.with(mContext)
+                    .load(path)
                     .fitCenter()
                     .into(view);
         }

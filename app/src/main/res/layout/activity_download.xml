@@ -10,9 +10,10 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar_download"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="@dimen/toolbar_height"
         android:layout_alignParentTop="true"
         android:background="@color/primaryColor"
+        android:elevation="4dp"
         app:contentInsetLeft="0dp"
         app:contentInsetStart="0dp"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
@@ -31,6 +32,24 @@
                 android:paddingStart="@dimen/view_margin_medium"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_back_press_arrow" />
+
+            <TextView
+                android:id="@+id/toolbar_title_main"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="@dimen/text_margin_medium"
+                android:layout_marginStart="@dimen/text_margin_medium"
+                android:layout_toEndOf="@id/btn_back_press_toolbar_main"
+                android:ellipsize="end"
+                android:fontFamily="cursive"
+                android:foregroundGravity="center_vertical"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:text="@string/toolbar_title"
+                android:textColor="@color/primaryTextColor"
+                android:textSize="@dimen/text_size_huge"
+                android:visibility="gone" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -60,10 +79,10 @@
         android:layout_alignParentTop="true">
 
         <ImageView
-            android:layout_gravity="center"
             android:id="@+id/ic_keyboard_download"
             android:layout_width="200dp"
             android:layout_height="200dp"
+            android:layout_gravity="center"
             android:alpha="0.4"
             android:src="@drawable/ic_typing"
             app:layout_constraintBottom_toBottomOf="parent"
