@@ -17,4 +17,5 @@
     <string name="image_dialog_info">Folder: %1$s\n\nName: %2$s\n\nDate taken: %3$s\n\nFile size: %4$.2f MB</string>
     <string name="delete_image_dialog">Are you sure to delete image: %1$s?</string>
     <string name="internet_unavailable">Internet connection is unavailable!</string>
+    <string name="download">Download</string>
 </resources>

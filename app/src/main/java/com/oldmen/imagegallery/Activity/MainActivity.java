@@ -8,8 +8,8 @@ import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements MainItemClickList
     @BindView(R.id.fab_download_main)
     FloatingActionButton mFabDownload;
 
-    private Handler mHandler;
     private ArrayList<String> mFolderTitle = new ArrayList<>();
     private HashMap<String, ArrayList<ImageModel>> mImageData = new HashMap<>();
     private FolderAdapter mFolderAdapter;
@@ -71,9 +70,14 @@ public class MainActivity extends AppCompatActivity implements MainItemClickList
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Constants.CAMERA_REQUEST_CODE) {
-            mFolderRecycler.setVisibility(View.INVISIBLE);
-            getImageData();
+        switch (requestCode) {
+            case Constants.CAMERA_REQUEST_CODE:
+                mFolderRecycler.setVisibility(View.INVISIBLE);
+                getImageData();
+                break;
+            case Constants.DOWNLOAD_ACTIVITY_REQUEST_CODE:
+                getImageData();
+                break;
         }
     }
 
@@ -83,15 +87,13 @@ public class MainActivity extends AppCompatActivity implements MainItemClickList
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         getSupportFragmentManager().addOnBackStackChangedListener(this);
-
         mFolderAdapter = new FolderAdapter(this, mFolderTitle, mImageData);
         mFolderRecycler.setLayoutManager(new LinearLayoutManager(this));
         mFolderRecycler.setAdapter(mFolderAdapter);
-        mProgressbar.setVisibility(View.VISIBLE);
-        mFolderRecycler.setVisibility(View.INVISIBLE);
         initToolbar();
         initFab();
         getImageData();
+        if(mFolderTitle.size() > 0) mProgressbar.setVisibility(View.INVISIBLE);
     }
 
     private void initToolbar() {
@@ -114,7 +116,8 @@ public class MainActivity extends AppCompatActivity implements MainItemClickList
 
         mFabDownload.setOnClickListener(view -> {
             if (InternetConnectionCheck.checkConnection(getApplicationContext())) {
-                startActivity(new Intent(MainActivity.this, DownloadActivity.class));
+                startActivityForResult(new Intent(MainActivity.this, DownloadActivity.class),
+                        Constants.DOWNLOAD_ACTIVITY_REQUEST_CODE);
             } else {
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
                 dialogBuilder.setTitle(getString(R.string.download_image))
@@ -129,10 +132,9 @@ public class MainActivity extends AppCompatActivity implements MainItemClickList
     private void getImageData() {
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
 
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                    this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-        } else {
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+            mProgressbar.setVisibility(View.VISIBLE);
+            mFolderRecycler.setVisibility(View.INVISIBLE);
             mFolderTitle.clear();
             mImageData.clear();
 
@@ -157,9 +159,7 @@ public class MainActivity extends AppCompatActivity implements MainItemClickList
                 mProgressbar.setVisibility(View.GONE);
                 mFolderRecycler.setVisibility(View.VISIBLE);
                 mFolderAdapter.notifyDataSetChanged();
-            }
-
-            if (mPagerFragment != null) {
+            } else if (mPagerFragment != null) {
                 Intent intent = new Intent(Constants.FILTER_PAGER_RECEIVER);
                 sendBroadcast(intent);
             }
@@ -180,9 +180,6 @@ public class MainActivity extends AppCompatActivity implements MainItemClickList
                 imgUri = cur.getString(cur.getColumnIndex(MediaStore.MediaColumns.DATA));
                 title = cur.getString(cur.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
                 size = cur.getString(cur.getColumnIndex(MediaStore.Images.Media.SIZE));
-
-                Log.i("ListingImages", " bucket=" + bucket
-                        + "\ndate_taken=" + date + "\nDATA=" + imgUri + "\nImage title=" + title);
 
                 if (mFolderTitle.contains(bucket)) {
                     mImageData.get(bucket).add(new ImageModel(imgUri, title, date, size));
@@ -253,6 +250,7 @@ public class MainActivity extends AppCompatActivity implements MainItemClickList
     @Override
     public void onBackStackChanged() {
         if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+            mFolderRecycler.setVisibility(View.VISIBLE);
             mBtnBackPress.setVisibility(View.GONE);
             mToolbarTitle.setText(getString(R.string.toolbar_title));
             mFabDownload.show();
@@ -260,9 +258,10 @@ public class MainActivity extends AppCompatActivity implements MainItemClickList
             mPagerFragment = null;
             mGridFragment = null;
         } else {
-            if (getSupportFragmentManager().getBackStackEntryCount() == 1) mPagerFragment = null;
             mFabDownload.hide();
+            mProgressbar.setVisibility(View.INVISIBLE);
             mBtnBackPress.setVisibility(View.VISIBLE);
+            if (getSupportFragmentManager().getBackStackEntryCount() == 1) mPagerFragment = null;
         }
 
     }
@@ -289,16 +288,12 @@ public class MainActivity extends AppCompatActivity implements MainItemClickList
 
         if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(
-                    this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                    this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
         } else {
             File img = new File(mImageData.get(folderName).get(position).getPath());
             String imgName = img.getName();
             String pathFolder = mImageData.get(folderName).get(position).getPath().replace(imgName, "");
             String fileType = imgName.substring(imgName.indexOf("."), imgName.length());
-            Log.i("Item Rename", "onImageRename: Old name - " + imgName);
-            Log.i("Item Rename", "onImageRename: File Type - " + fileType);
-            Log.i("Item Rename", "onImageRename: Path Folder - " + pathFolder);
-            Log.i("Item Rename", "onImageRename: New File Name - " + newFileName);
 
             boolean rename = false;
             if (img.exists()) {
@@ -341,5 +336,26 @@ public class MainActivity extends AppCompatActivity implements MainItemClickList
     protected void onResume() {
         super.onResume();
         if (mFolderAdapter != null) mFolderAdapter.notifyDataSetChanged();
+        int permissionCheckRead = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        if (permissionCheckRead != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+        }
+
+        onBackStackChanged();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == 1) {
+            getImageData();
+            int permissionCheckWrite = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+            if (permissionCheckWrite != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
+            }
+        }
     }
 }

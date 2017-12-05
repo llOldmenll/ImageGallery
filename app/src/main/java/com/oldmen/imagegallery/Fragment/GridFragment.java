@@ -39,6 +39,7 @@ public class GridFragment extends Fragment {
     private GridAdapter mGridAdapter;
     private String mFolderTitle;
     private FragmentChangeListener mFragmentListener;
+    private GridReceiver mGridReceiver;
 
     public GridFragment() {
     }
@@ -55,7 +56,8 @@ public class GridFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext.registerReceiver(new GridReceiver(), new IntentFilter(Constants.FILTER_GRID_RECEIVER));
+        mGridReceiver = new GridReceiver();
+        mContext.registerReceiver(mGridReceiver, new IntentFilter(Constants.FILTER_GRID_RECEIVER));
         if (getArguments() != null) {
             mImgModel = getArguments().getParcelableArrayList(Constants.ARGUMENT_IMAGE_MODEL_GRID);
             mFolderTitle = getArguments().getString(Constants.ARGUMENT_CURRENT_FOLDER_TITLE);
@@ -99,6 +101,12 @@ public class GridFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mContext.unregisterReceiver(mGridReceiver);
     }
 
     @Override

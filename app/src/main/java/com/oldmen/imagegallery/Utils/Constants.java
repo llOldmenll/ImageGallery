@@ -13,16 +13,19 @@ public class Constants {
     public static final String ARGUMENT_CURRENT_FOLDER_TITLE = "ARGUMENT_CURRENT_FOLDER_TITLE";
     public static final String FRAGMENT_GRID_TAG = "FRAGMENT_GRID_TAG";
     public static final String FRAGMENT_PAGER_TAG = "FRAGMENT_PAGER_TAG";
-    public static final int CAMERA_REQUEST_CODE = 200;
     public static final String DATE_FORM_FACTOR = "yyyy-mm-dd HH:mm";
 
     public static final String FILTER_GRID_RECEIVER = "FILTER_GRID_RECEIVER";
     public static final String FILTER_PAGER_RECEIVER = "FILTER_PAGER_RECEIVER";
     public static final String EXTRAS_NEW_IMAGE_NAME = "EXTRAS_NEW_IMAGE_NAME";
     public static final String EXTRAS_IMAGE_POSITION = "EXTRAS_IMAGE_POSITION";
+    public static final String EXTRAS_HIT_LIST = "EXTRAS_HIT_LIST";
 
     public static final String BASE_URL ="https://pixabay.com/";
     public static final String PIXABAY_KEY = "7255481-35cab5c1c839142dfc760b072";
 
-    public static final String EXTRAS_HIT_LIST = "EXTRAS_HIT_LIST";
+    public static final String SAVE_STATE_PROGRESS_BAR = "SAVE_STATE_PROGRESS_BAR";
+
+    public static final int CAMERA_REQUEST_CODE = 200;
+    public static final int DOWNLOAD_ACTIVITY_REQUEST_CODE = 1;
 }

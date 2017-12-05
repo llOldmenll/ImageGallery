@@ -42,7 +42,7 @@
 
                 <TextView
                     android:id="@+id/toolbar_title_main"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="@dimen/text_margin_medium"
@@ -55,7 +55,8 @@
                     android:maxLines="1"
                     android:text="@string/toolbar_title"
                     android:textColor="@color/primaryTextColor"
-                    android:textSize="@dimen/text_size_huge" />
+                    android:textSize="@dimen/text_size_huge"
+                    android:layout_toStartOf="@id/btn_camera_toolbar_main"/>
 
                 <ImageButton
                     android:id="@+id/btn_camera_toolbar_main"
@@ -78,17 +79,18 @@
             android:layout_alignParentTop="true">
 
             <ProgressBar
+                android:visibility="invisible"
                 android:id="@+id/progressbar_main"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center" />
+                android:layout_gravity="center"
+                android:elevation="1dp"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/folder_recycler_main"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/toolbar_height"
-                android:visibility="invisible" />
+                android:layout_marginTop="@dimen/toolbar_height" />
 
         </FrameLayout>
 
