@@ -44,6 +44,30 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/btn_download_footer"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_action_download" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/download"
+                android:textColor="@color/primaryTextColor"
+                android:textSize="@dimen/text_size_small" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/btn_info_footer"
             android:layout_width="0dp"
             android:layout_height="match_parent"

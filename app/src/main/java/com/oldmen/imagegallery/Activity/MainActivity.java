@@ -259,10 +259,12 @@ public class MainActivity extends AppCompatActivity implements MainItemClickList
             mFolderAdapter.notifyDataSetChanged();
             mPagerFragment = null;
             mGridFragment = null;
+            mProgressbar.setVisibility(View.INVISIBLE);
+            mFolderRecycler.setVisibility(View.VISIBLE);
         } else {
-            if (getSupportFragmentManager().getBackStackEntryCount() == 1) mPagerFragment = null;
             mFabDownload.hide();
             mBtnBackPress.setVisibility(View.VISIBLE);
+            if (getSupportFragmentManager().getBackStackEntryCount() == 1) mPagerFragment = null;
         }
 
     }
@@ -340,6 +342,7 @@ public class MainActivity extends AppCompatActivity implements MainItemClickList
     @Override
     protected void onResume() {
         super.onResume();
+        onBackStackChanged();
         if (mFolderAdapter != null) mFolderAdapter.notifyDataSetChanged();
     }
 }

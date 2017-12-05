@@ -1,14 +1,21 @@
 package com.oldmen.imagegallery.Fragment;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -19,6 +26,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.oldmen.imagegallery.GlideApp;
 import com.oldmen.imagegallery.Interface.FragmentChangeListener;
@@ -28,6 +38,8 @@ import com.oldmen.imagegallery.R;
 import com.oldmen.imagegallery.Utils.Constants;
 import com.oldmen.imagegallery.Utils.ZoomOutPageTransformer;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -46,6 +58,8 @@ public class PagerFragment extends Fragment {
     LinearLayout mBtnRenameFooter;
     @BindView(R.id.btn_info_footer)
     LinearLayout mBtnInfoFooter;
+    @BindView(R.id.btn_download_footer)
+    LinearLayout mBtnDownloadFooter;
 
     private int mCurrentPosition;
     private boolean mIsFooterHidden;
@@ -177,6 +191,7 @@ public class PagerFragment extends Fragment {
 
     private void initFooter() {
         if (isMainActivity) {
+            mBtnDownloadFooter.setVisibility(View.GONE);
             mBtnInfoFooter.setOnClickListener(view -> {
                 SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORM_FACTOR, Locale.getDefault());
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext);
@@ -206,10 +221,51 @@ public class PagerFragment extends Fragment {
                         .create().show();
             });
         } else {
+            mBtnDownloadFooter.setVisibility(View.VISIBLE);
             mBtnInfoFooter.setVisibility(View.GONE);
             mBtnRenameFooter.setVisibility(View.GONE);
+            mBtnDownloadFooter.setOnClickListener(view -> {
+                Hit hit = mHits.get(mViewPager.getCurrentItem());
+                Glide.with(mContext).asBitmap().load(hit.getmWebformatURL())
+                        .into(new SimpleTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                                saveImage(resource, hit.getmTags());
+                            }
+                        });
+            });
         }
 
+    }
+
+    private void saveImage(Bitmap finalBitmap, String name) {
+        int permissionCheck = ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        } else {
+            File myDir = new File(Environment.getExternalStorageDirectory().toString() + "/pixabay_images");
+            if (!myDir.exists()) {
+                myDir.mkdirs();
+                mContext.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(myDir)));
+            }
+            String imgName = name.trim() + ".jpg";
+            File file = new File(myDir, imgName);
+            if (file.exists())
+                file.delete();
+            try {
+                FileOutputStream out = new FileOutputStream(file);
+                finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                out.flush();
+                out.close();
+                mContext.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
+                Toast.makeText(mContext, "Image saved", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(mContext, "Image wasn't saved", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     public interface PagerFragmentListener {
